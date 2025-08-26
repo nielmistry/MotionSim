@@ -51,8 +51,19 @@ Ensure proper orientation and connections for the MPU6050 sensor and other compo
 
 ## Resources
 - [Detailed Documentation](./DIY%20Motion%20Simulator%20Documentation.pdf)
+- [PCB CI/CD Documentation](./docs/PCB_CI_CD.md) - Automated PCB manufacturing file generation
 - [GitHub Repository](https://github.com/MichaelRechtin/MotionSim)
 - [Bill of Materials](#)
+
+### PCB Manufacturing
+
+This repository includes automated CI/CD workflows for generating PCB manufacturing files:
+
+- **Automated Gerber Generation**: Manufacturing files are automatically generated from KiCad PCB designs
+- **Release Management**: Semantic versioning triggers automatic GitHub releases with PCB files
+- **Local Generation**: Use `./generate-pcb-files.sh` to generate files locally
+
+See [PCB CI/CD Documentation](./docs/PCB_CI_CD.md) for detailed information.
 
 ---
 
