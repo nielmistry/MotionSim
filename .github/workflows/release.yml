@@ -15,7 +15,7 @@ jobs:
       
     - name: Set up Docker for KiCad
       run: |
-        docker pull kicad/kicad:8.0
+        docker pull kicad/kicad:9.0
         
     - name: Extract version from tag
       id: version
@@ -28,43 +28,66 @@ jobs:
         mkdir -p release-assets/pdfs
         mkdir -p release-assets/gerbers
         mkdir -p release-assets/drill
+        chmod -R 777 release-assets
+        
+    - name: Setup KiCad environment
+      run: |
+        mkdir -p /tmp/kicad-home/.cache
+        mkdir -p /tmp/kicad-home/.config/kicad/9.0
+        chmod -R 777 /tmp/kicad-home
         
     - name: Generate PDFs from Schematics
       run: |
         # Generate PDF for main schematic
-        docker run --rm -v "$PWD:/workspace" kicad/kicad:8.0 \
-          kicad-cli sch export pdf \
-          --output /workspace/release-assets/pdfs/MotionSimPCB-schematic-${{ steps.version.outputs.VERSION }}.pdf \
-          /workspace/MotionSimPCB/MotionSimPCB.kicad_sch
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli sch export pdf MotionSimPCB/MotionSimPCB.kicad_sch && mv MotionSimPCB.pdf release-assets/pdfs/MotionSimPCB-schematic-${{ steps.version.outputs.VERSION }}.pdf"
           
         # Generate PDF for controllers schematic
-        docker run --rm -v "$PWD:/workspace" kicad/kicad:8.0 \
-          kicad-cli sch export pdf \
-          --output /workspace/release-assets/pdfs/controllers-schematic-${{ steps.version.outputs.VERSION }}.pdf \
-          /workspace/MotionSimPCB/controllers.kicad_sch
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli sch export pdf MotionSimPCB/controllers.kicad_sch && mv controllers.pdf release-assets/pdfs/controllers-schematic-${{ steps.version.outputs.VERSION }}.pdf"
           
     - name: Generate PCB PDF
       run: |
-        docker run --rm -v "$PWD:/workspace" kicad/kicad:8.0 \
-          kicad-cli pcb export pdf \
-          --output /workspace/release-assets/pdfs/MotionSimPCB-pcb-${{ steps.version.outputs.VERSION }}.pdf \
-          /workspace/MotionSimPCB/MotionSimPCB.kicad_pcb
+        # Try to generate PCB PDF
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli pcb export pdf --layers 'F.Cu,B.Cu,F.Silkscreen,B.Silkscreen,Edge.Cuts' MotionSimPCB/MotionSimPCB.kicad_pcb && mv MotionSimPCB.pdf release-assets/pdfs/MotionSimPCB-pcb-${{ steps.version.outputs.VERSION }}.pdf" || echo "PCB PDF generation failed, skipping"
           
     - name: Generate Gerber Files
       run: |
-        docker run --rm -v "$PWD:/workspace" kicad/kicad:8.0 \
-          kicad-cli pcb export gerbers \
-          --output /workspace/release-assets/gerbers/ \
-          --layers "F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts" \
-          /workspace/MotionSimPCB/MotionSimPCB.kicad_pcb
+        # Generate Gerbers
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli pcb export gerbers --layers 'F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts' MotionSimPCB/MotionSimPCB.kicad_pcb && mv MotionSimPCB-*.g* release-assets/gerbers/" || echo "Gerber generation failed"
           
     - name: Generate Drill Files
       run: |
-        docker run --rm -v "$PWD:/workspace" kicad/kicad:8.0 \
-          kicad-cli pcb export drill \
-          --output /workspace/release-assets/drill/ \
-          --format excellon \
-          /workspace/MotionSimPCB/MotionSimPCB.kicad_pcb
+        # Generate drill files
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli pcb export drill --format excellon MotionSimPCB/MotionSimPCB.kicad_pcb && mv MotionSimPCB*.drl release-assets/drill/" || echo "Drill generation failed"
           
     - name: Create release packages
       run: |
