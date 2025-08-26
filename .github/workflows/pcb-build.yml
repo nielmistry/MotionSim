@@ -5,6 +5,7 @@ on:
     branches: [ main ]
     paths:
       - 'MotionSimPCB/**'
+      - '.github/workflows/pcb-build.yml'      
   workflow_dispatch:
 
 jobs:
