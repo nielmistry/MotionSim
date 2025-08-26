@@ -62,19 +62,19 @@ jobs:
       run: |
         echo "🔍 Validating workflow YAML syntax..."
         python3 -c "
-import yaml
-import sys
-files = ['.github/workflows/pcb-build.yml', '.github/workflows/release.yml', '.github/workflows/test-pcb.yml']
-for f in files:
-    try:
-        with open(f) as file:
-            yaml.safe_load(file)
-        print(f'✅ {f} - Valid YAML')
-    except Exception as e:
-        print(f'❌ {f} - Invalid YAML: {e}')
-        sys.exit(1)
-print('✅ All workflow files have valid YAML syntax')
-"
+        import yaml
+        import sys
+        files = ['.github/workflows/pcb-build.yml', '.github/workflows/release.yml', '.github/workflows/test-pcb.yml']
+        for f in files:
+            try:
+                with open(f) as file:
+                    yaml.safe_load(file)
+                print(f'✅ {f} - Valid YAML')
+            except Exception as e:
+                print(f'❌ {f} - Invalid YAML: {e}')
+                sys.exit(1)
+        print('✅ All workflow files have valid YAML syntax')
+        "
         
     - name: Test file permissions and accessibility
       run: |
