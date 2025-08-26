@@ -1,0 +1,56 @@
+name: Test PCB Workflow
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+    paths:
+      - '.github/workflows/pcb-build.yml'
+      - '.github/workflows/release.yml'
+
+jobs:
+  test-kicad-setup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Test Docker KiCad setup
+      run: |
+        docker pull kicad/kicad:8.0
+        echo "KiCad Docker image pulled successfully"
+        
+    - name: Test KiCad CLI availability
+      run: |
+        docker run --rm kicad/kicad:8.0 kicad-cli --help
+        
+    - name: Verify PCB files exist
+      run: |
+        echo "Checking for PCB files..."
+        ls -la MotionSimPCB/
+        
+        if [ ! -f "MotionSimPCB/MotionSimPCB.kicad_pcb" ]; then
+          echo "❌ PCB file not found"
+          exit 1
+        fi
+        
+        if [ ! -f "MotionSimPCB/MotionSimPCB.kicad_sch" ]; then
+          echo "❌ Main schematic file not found"
+          exit 1
+        fi
+        
+        if [ ! -f "MotionSimPCB/controllers.kicad_sch" ]; then
+          echo "❌ Controllers schematic file not found"  
+          exit 1
+        fi
+        
+        echo "✅ All required PCB files found"
+        
+    - name: Test file permissions and accessibility
+      run: |
+        echo "Testing file read permissions..."
+        docker run --rm -v "$PWD:/workspace" kicad/kicad:8.0 \
+          head -5 /workspace/MotionSimPCB/MotionSimPCB.kicad_pcb
+          
+        echo "✅ PCB files are accessible to Docker container"
