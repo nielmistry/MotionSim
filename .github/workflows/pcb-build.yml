@@ -87,51 +87,39 @@ jobs:
           
     - name: Generate Gerber Files
       run: |
-        set +e  # Don't exit on error
-        
-        # Try to generate Gerbers
+        # Generate Gerbers using KiCad CLI with proper output directory
         docker run --rm \
           -e HOME=/tmp/kicad-home \
           -v "/tmp/kicad-home:/tmp/kicad-home" \
           -v "$PWD:/workspace" \
           -w /workspace \
           kicad/kicad:9.0 \
-          sh -c "kicad-cli pcb export gerbers --layers 'F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts' MotionSimPCB/MotionSimPCB.kicad_pcb && mv MotionSimPCB-*.g* assets/gerbers/ 2>/dev/null || true"
+          kicad-cli pcb export gerbers \
+          --output /workspace/assets/gerbers \
+          --layers 'F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts' \
+          MotionSimPCB/MotionSimPCB.kicad_pcb
           
-        # Check if Gerbers were generated, if not create instructional file
-        if [ ! "$(ls -A assets/gerbers/ 2>/dev/null)" ]; then
-          echo "Gerber generation failed in CI environment" > assets/gerbers/GERBER_GENERATION_FAILED.txt
-          echo "To generate Gerbers manually:" >> assets/gerbers/GERBER_GENERATION_FAILED.txt
-          echo "1. Open MotionSimPCB/MotionSimPCB.kicad_pcb in KiCad" >> assets/gerbers/GERBER_GENERATION_FAILED.txt
-          echo "2. Go to File > Fabrication Outputs > Gerbers" >> assets/gerbers/GERBER_GENERATION_FAILED.txt
-          echo "3. Select layers and generate" >> assets/gerbers/GERBER_GENERATION_FAILED.txt
-        fi
-          
-        set -e  # Re-enable exit on error
+        # Verify Gerbers were generated
+        echo "Generated Gerber files:"
+        ls -la assets/gerbers/
           
     - name: Generate Drill Files
       run: |
-        set +e  # Don't exit on error
-        
-        # Try to generate drill files
+        # Generate drill files using KiCad CLI with proper output directory
         docker run --rm \
           -e HOME=/tmp/kicad-home \
           -v "/tmp/kicad-home:/tmp/kicad-home" \
           -v "$PWD:/workspace" \
           -w /workspace \
           kicad/kicad:9.0 \
-          sh -c "kicad-cli pcb export drill --format excellon MotionSimPCB/MotionSimPCB.kicad_pcb && mv MotionSimPCB*.drl assets/drill/ 2>/dev/null || true"
+          kicad-cli pcb export drill \
+          --format excellon \
+          --output /workspace/assets/drill \
+          MotionSimPCB/MotionSimPCB.kicad_pcb
           
-        # Check if drill files were generated  
-        if [ ! "$(ls -A assets/drill/ 2>/dev/null)" ]; then
-          echo "Drill file generation failed in CI environment" > assets/drill/DRILL_GENERATION_FAILED.txt
-          echo "To generate drill files manually:" >> assets/drill/DRILL_GENERATION_FAILED.txt
-          echo "1. Open MotionSimPCB/MotionSimPCB.kicad_pcb in KiCad" >> assets/drill/DRILL_GENERATION_FAILED.txt  
-          echo "2. Go to File > Fabrication Outputs > Drill Files" >> assets/drill/DRILL_GENERATION_FAILED.txt
-          echo "3. Generate drill files" >> assets/drill/DRILL_GENERATION_FAILED.txt
-        fi
-        
-        set -e  # Re-enable exit on error
+        # Verify drill files were generated
+        echo "Generated drill files:"
+        ls -la assets/drill/
           
     - name: List generated files
       run: |
@@ -161,33 +149,12 @@ jobs:
         
     - name: Create ZIP package for manufacturing
       run: |
-        # Create manufacturing package from whatever files we have
+        # Create manufacturing package from generated files
         cd assets
         
-        # If we have generated gerbers and drill files, package them
-        if [ "$(ls -A gerbers/ 2>/dev/null)" ] && [ "$(ls -A drill/ 2>/dev/null)" ]; then
-          echo "Creating manufacturing package with generated files..."
-          zip -r ../MotionSimPCB-manufacturing-files.zip gerbers/ drill/
-        else
-          echo "No generated manufacturing files, creating instructional package..."
-          mkdir -p ../manufacturing-instructions
-          echo "# Manufacturing Files Generation Failed" > ../manufacturing-instructions/README.md
-          echo "" >> ../manufacturing-instructions/README.md  
-          echo "The automated generation of Gerber and drill files failed in the CI environment." >> ../manufacturing-instructions/README.md
-          echo "To generate manufacturing files manually:" >> ../manufacturing-instructions/README.md
-          echo "" >> ../manufacturing-instructions/README.md
-          echo "1. Install KiCad (version 9.0 or compatible)" >> ../manufacturing-instructions/README.md
-          echo "2. Open MotionSimPCB/MotionSimPCB.kicad_pcb" >> ../manufacturing-instructions/README.md
-          echo "3. Generate Gerbers: File > Fabrication Outputs > Gerbers" >> ../manufacturing-instructions/README.md
-          echo "4. Generate Drill Files: File > Fabrication Outputs > Drill Files" >> ../manufacturing-instructions/README.md
-          echo "5. Package the .gbr and .drl files for your PCB manufacturer" >> ../manufacturing-instructions/README.md
-          
-          # Copy the source PCB file for reference
-          cp ../MotionSimPCB/MotionSimPCB.kicad_pcb ../manufacturing-instructions/
-          cp ../MotionSimPCB/MotionSimPCB.kicad_pro ../manufacturing-instructions/
-          
-          zip -r ../MotionSimPCB-manufacturing-files.zip ../manufacturing-instructions/
-        fi
+        # Create manufacturing package with generated files
+        echo "Creating manufacturing package with generated files..."
+        zip -r ../MotionSimPCB-manufacturing-files.zip gerbers/ drill/
         
         cd ..
         
@@ -207,20 +174,39 @@ jobs:
           const pullNumber = context.payload.pull_request.number;
           const runId = context.runId;
           
+          // Get artifacts for this workflow run
+          const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            owner,
+            repo,
+            run_id: runId
+          });
+          
+          // Find specific artifacts
+          const pdfArtifact = artifacts.data.artifacts.find(a => a.name === 'pcb-pdfs');
+          const gerberArtifact = artifacts.data.artifacts.find(a => a.name === 'pcb-gerbers');
+          const drillArtifact = artifacts.data.artifacts.find(a => a.name === 'pcb-drill-files');
+          const manufacturingArtifact = artifacts.data.artifacts.find(a => a.name === 'manufacturing-package');
+          
           const comment = `## 🔧 PCB Build Artifacts Generated
           
           The PCB files have been processed and the following artifacts are available for download:
           
           ### 📄 PDFs
-          - [PCB Schematics & Layout PDFs](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts) - Contains schematic and PCB layout PDFs
+          - [PCB Schematics & Layout PDFs](https://github.com/${owner}/${repo}/suites/${context.payload.check_suite?.id || context.runId}/artifacts/${pdfArtifact?.id || ''}) - Contains schematic and PCB layout PDFs
           
           ### 🏭 Manufacturing Files
-          - [Gerber Files](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts) - PCB manufacturing files
-          - [Drill Files](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts) - Drill files for PCB fabrication
-          - [Complete Manufacturing Package](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts) - ZIP package ready for PCB manufacturer
+          - [Gerber Files](https://github.com/${owner}/${repo}/suites/${context.payload.check_suite?.id || context.runId}/artifacts/${gerberArtifact?.id || ''}) - PCB manufacturing files
+          - [Drill Files](https://github.com/${owner}/${repo}/suites/${context.payload.check_suite?.id || context.runId}/artifacts/${drillArtifact?.id || ''}) - Drill files for PCB fabrication
+          - [Complete Manufacturing Package](https://github.com/${owner}/${repo}/suites/${context.payload.check_suite?.id || context.runId}/artifacts/${manufacturingArtifact?.id || ''}) - ZIP package ready for PCB manufacturer
           
           ### 📦 All Artifacts
           You can download all artifacts from the [GitHub Actions run](https://github.com/${owner}/${repo}/actions/runs/${runId}).
+          
+          ### 🔗 Direct Download Links
+          ${pdfArtifact ? `- [Download PDFs](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${pdfArtifact.id})` : ''}
+          ${gerberArtifact ? `- [Download Gerber Files](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${gerberArtifact.id})` : ''}
+          ${drillArtifact ? `- [Download Drill Files](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${drillArtifact.id})` : ''}
+          ${manufacturingArtifact ? `- [Download Manufacturing Package](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${manufacturingArtifact.id})` : ''}
           
           ---
           *Generated automatically by PCB Build workflow*`;
