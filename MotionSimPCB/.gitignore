@@ -38,4 +38,4 @@ fp-info-cache
 production
 # Local project settings
 *.kicad_prl
-
+pdfs/
