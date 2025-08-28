@@ -1,0 +1,956 @@
+(kicad_sch
+	(version 20250114)
+	(generator "eeschema")
+	(generator_version "9.0")
+	(uuid "8b2aacca-f8ea-4260-83f7-18bd8f75478b")
+	(paper "A4")
+	(lib_symbols
+		(symbol "Diode:BAT54SDW"
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "D"
+				(at 0 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "BAT54SDW"
+				(at 0 -2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" "Package_TO_SOT_SMD:SOT-363_SC-70-6"
+				(at 0 -4.445 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" "https://www.diodes.com/assets/Datasheets/BAT54TW_ADW_CDW_SDW_BRW.pdf"
+				(at 0 2.54 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Schottky diode array 2 pair Com A, SOT-363"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "diode"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_fp_filters" "SOT?363*"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "BAT54SDW_0_1"
+				(polyline
+					(pts
+						(xy -0.635 0.635) (xy -0.635 1.27) (xy -1.27 1.27) (xy -1.27 -1.27) (xy -1.905 -1.27) (xy -1.905 -0.635)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 1.27) (xy -1.27 0) (xy 1.27 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 -1.27) (xy 1.27 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "BAT54SDW_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "BAT54SDW_2_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "6"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "BAT54SDW_3_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "4"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "BAT54SDW_4_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "5"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "3"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+		(symbol "power:GND"
+			(power)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(property "Reference" "#PWR"
+				(at 0 -6.35 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Value" "GND"
+				(at 0 -3.81 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(property "ki_keywords" "global power"
+				(at 0 0 0)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+					(hide yes)
+				)
+			)
+			(symbol "GND_0_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 -1.27) (xy 1.27 -1.27) (xy 0 -2.54) (xy -1.27 -1.27) (xy 0 -1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "GND_1_1"
+				(pin power_in line
+					(at 0 0 270)
+					(length 0)
+					(name "~"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
+	)
+	(junction
+		(at 147.32 69.85)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "2b8980a4-9da1-4a4f-babd-e71ff3b40674")
+	)
+	(junction
+		(at 147.32 85.09)
+		(diameter 0)
+		(color 0 0 0 0)
+		(uuid "79943244-c1dc-4785-ad18-c45170794649")
+	)
+	(wire
+		(pts
+			(xy 147.32 85.09) (xy 151.13 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "0cf30e2e-f59c-444e-9ed6-ac605228fc13")
+	)
+	(wire
+		(pts
+			(xy 147.32 66.04) (xy 147.32 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1192202a-e4ca-4d20-8645-157451fb95b7")
+	)
+	(wire
+		(pts
+			(xy 143.51 69.85) (xy 147.32 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "378da305-05ce-479c-a2c3-5c02c108f2de")
+	)
+	(wire
+		(pts
+			(xy 147.32 69.85) (xy 151.13 69.85)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "6d6fe5d3-dcbe-4b1f-9317-e5d060fa340b")
+	)
+	(wire
+		(pts
+			(xy 143.51 85.09) (xy 147.32 85.09)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b5af9b6b-d187-439f-8326-97f583d2a73c")
+	)
+	(hierarchical_label "SIG2"
+		(shape bidirectional)
+		(at 151.13 77.47 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "0cae1493-1ddb-4163-985c-31a6f1a7eeca")
+	)
+	(hierarchical_label "+VClamp"
+		(shape input)
+		(at 147.32 66.04 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "6418fac7-a56a-4208-b343-6733885d3d81")
+	)
+	(hierarchical_label "SIG1"
+		(shape bidirectional)
+		(at 143.51 77.47 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "7d7004b7-9390-4603-824e-a18f615cbe2b")
+	)
+	(symbol
+		(lib_id "Diode:BAT54SDW")
+		(at 151.13 73.66 270)
+		(unit 2)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "197dcb29-4776-472f-b7d8-92c16091488c")
+		(property "Reference" "D8"
+			(at 153.67 72.0724 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "BAT54SDW"
+			(at 153.67 74.6124 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-363_SC-70-6"
+			(at 146.685 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.diodes.com/assets/Datasheets/BAT54TW_ADW_CDW_SDW_BRW.pdf"
+			(at 153.67 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Schottky diode array 2 pair Com A, SOT-363"
+			(at 151.13 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "47e86022-1abf-4ca6-a2fe-80075cef21dc")
+		)
+		(pin "4"
+			(uuid "d6044171-9cc9-4221-b21b-60065f522172")
+		)
+		(pin "6"
+			(uuid "e40fcc79-1425-4a98-bc7b-a6511f551929")
+		)
+		(pin "6"
+			(uuid "c7b9d62c-b4c2-490b-a52b-96c4045826a4")
+		)
+		(pin "1"
+			(uuid "762c37da-7193-4774-ade6-0eb5a33ded4d")
+		)
+		(pin "2"
+			(uuid "bad04b5c-fa90-4294-9e2c-36cd51575636")
+		)
+		(pin "5"
+			(uuid "2fa76698-c1f3-4d9c-8f81-3b6beb9f27f7")
+		)
+		(pin "3"
+			(uuid "1f37d11e-1887-47b4-8b60-a3936e5455f3")
+		)
+		(instances
+			(project "MotionSimPCB"
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/13276313-cc7b-413f-87be-c15c3b44af35"
+					(reference "D9")
+					(unit 2)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/64e871d9-89d8-4ac7-88f9-0b2d012fa0dc"
+					(reference "D8")
+					(unit 2)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/c94e7b62-80ae-4303-ae10-6e37284984a0"
+					(reference "D7")
+					(unit 2)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/d2a30c0c-6afb-403c-9504-25ae0e5b9c6b"
+					(reference "D10")
+					(unit 2)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:BAT54SDW")
+		(at 151.13 81.28 270)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "1980dc9f-321c-42bb-b3c8-11dd5374cf8c")
+		(property "Reference" "D8"
+			(at 153.67 79.6924 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "BAT54SDW"
+			(at 153.67 82.2324 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-363_SC-70-6"
+			(at 146.685 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.diodes.com/assets/Datasheets/BAT54TW_ADW_CDW_SDW_BRW.pdf"
+			(at 153.67 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Schottky diode array 2 pair Com A, SOT-363"
+			(at 151.13 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "47e86022-1abf-4ca6-a2fe-80075cef21db")
+		)
+		(pin "4"
+			(uuid "d6044171-9cc9-4221-b21b-60065f522171")
+		)
+		(pin "6"
+			(uuid "5f47f51f-bae4-45e3-b021-6c528edb99ac")
+		)
+		(pin "6"
+			(uuid "c7b9d62c-b4c2-490b-a52b-96c4045826a3")
+		)
+		(pin "1"
+			(uuid "17aefdcf-7b18-48b4-b51a-902d7bfc0e9c")
+		)
+		(pin "2"
+			(uuid "2092842a-82df-418a-ab34-0de4072fd704")
+		)
+		(pin "5"
+			(uuid "2fa76698-c1f3-4d9c-8f81-3b6beb9f27f6")
+		)
+		(pin "3"
+			(uuid "1f37d11e-1887-47b4-8b60-a3936e5455f2")
+		)
+		(instances
+			(project "MotionSimPCB"
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/13276313-cc7b-413f-87be-c15c3b44af35"
+					(reference "D9")
+					(unit 1)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/64e871d9-89d8-4ac7-88f9-0b2d012fa0dc"
+					(reference "D8")
+					(unit 1)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/c94e7b62-80ae-4303-ae10-6e37284984a0"
+					(reference "D7")
+					(unit 1)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/d2a30c0c-6afb-403c-9504-25ae0e5b9c6b"
+					(reference "D10")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:BAT54SDW")
+		(at 143.51 73.66 270)
+		(unit 4)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "55ae452b-0d49-4fc6-a759-46f632b6db04")
+		(property "Reference" "D8"
+			(at 140.97 72.0724 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "BAT54SDW"
+			(at 140.97 74.6124 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-363_SC-70-6"
+			(at 139.065 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.diodes.com/assets/Datasheets/BAT54TW_ADW_CDW_SDW_BRW.pdf"
+			(at 146.05 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Schottky diode array 2 pair Com A, SOT-363"
+			(at 143.51 73.66 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "db556ba7-d86f-4c6f-91fe-ecaf3be8a46d")
+		)
+		(pin "4"
+			(uuid "d6044171-9cc9-4221-b21b-60065f522174")
+		)
+		(pin "6"
+			(uuid "9e7ef166-e7e6-4189-8719-58ad8a4c9d43")
+		)
+		(pin "6"
+			(uuid "c7b9d62c-b4c2-490b-a52b-96c4045826a6")
+		)
+		(pin "1"
+			(uuid "762c37da-7193-4774-ade6-0eb5a33ded4f")
+		)
+		(pin "2"
+			(uuid "2092842a-82df-418a-ab34-0de4072fd707")
+		)
+		(pin "5"
+			(uuid "bee13046-fa69-4497-bd00-e15dfc1c6a4c")
+		)
+		(pin "3"
+			(uuid "1f37d11e-1887-47b4-8b60-a3936e5455f5")
+		)
+		(instances
+			(project "MotionSimPCB"
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/13276313-cc7b-413f-87be-c15c3b44af35"
+					(reference "D9")
+					(unit 4)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/64e871d9-89d8-4ac7-88f9-0b2d012fa0dc"
+					(reference "D8")
+					(unit 4)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/c94e7b62-80ae-4303-ae10-6e37284984a0"
+					(reference "D7")
+					(unit 4)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/d2a30c0c-6afb-403c-9504-25ae0e5b9c6b"
+					(reference "D10")
+					(unit 4)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:GND")
+		(at 147.32 85.09 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "9f8fb81c-8771-4d6d-b45b-52e5679dcf54")
+		(property "Reference" "#PWR036"
+			(at 147.32 91.44 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Value" "GND"
+			(at 147.32 90.17 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 147.32 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" ""
+			(at 147.32 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Power symbol creates a global label with name \"GND\" , ground"
+			(at 147.32 85.09 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "1"
+			(uuid "61ed6add-d871-4024-b993-d1a032110eb2")
+		)
+		(instances
+			(project "MotionSimPCB"
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/13276313-cc7b-413f-87be-c15c3b44af35"
+					(reference "#PWR039")
+					(unit 1)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/64e871d9-89d8-4ac7-88f9-0b2d012fa0dc"
+					(reference "#PWR036")
+					(unit 1)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/c94e7b62-80ae-4303-ae10-6e37284984a0"
+					(reference "#PWR038")
+					(unit 1)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/d2a30c0c-6afb-403c-9504-25ae0e5b9c6b"
+					(reference "#PWR040")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Diode:BAT54SDW")
+		(at 143.51 81.28 270)
+		(unit 3)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "c0a1282b-cea9-478c-bbe0-82adad927fe6")
+		(property "Reference" "D8"
+			(at 140.97 79.6924 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Value" "BAT54SDW"
+			(at 140.97 82.2324 90)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify right)
+			)
+		)
+		(property "Footprint" "Package_TO_SOT_SMD:SOT-363_SC-70-6"
+			(at 139.065 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Datasheet" "https://www.diodes.com/assets/Datasheets/BAT54TW_ADW_CDW_SDW_BRW.pdf"
+			(at 146.05 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(property "Description" "Schottky diode array 2 pair Com A, SOT-363"
+			(at 143.51 81.28 0)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(hide yes)
+			)
+		)
+		(pin "3"
+			(uuid "70d44841-9daa-480f-b9a6-3d21b993ecf2")
+		)
+		(pin "4"
+			(uuid "7de70380-1c68-473b-9789-ddb3f7bea2bb")
+		)
+		(pin "6"
+			(uuid "9e7ef166-e7e6-4189-8719-58ad8a4c9d42")
+		)
+		(pin "6"
+			(uuid "c7b9d62c-b4c2-490b-a52b-96c4045826a5")
+		)
+		(pin "1"
+			(uuid "762c37da-7193-4774-ade6-0eb5a33ded4e")
+		)
+		(pin "2"
+			(uuid "2092842a-82df-418a-ab34-0de4072fd706")
+		)
+		(pin "5"
+			(uuid "2fa76698-c1f3-4d9c-8f81-3b6beb9f27f8")
+		)
+		(pin "3"
+			(uuid "1f37d11e-1887-47b4-8b60-a3936e5455f4")
+		)
+		(instances
+			(project "MotionSimPCB"
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/13276313-cc7b-413f-87be-c15c3b44af35"
+					(reference "D9")
+					(unit 3)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/64e871d9-89d8-4ac7-88f9-0b2d012fa0dc"
+					(reference "D8")
+					(unit 3)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/c94e7b62-80ae-4303-ae10-6e37284984a0"
+					(reference "D7")
+					(unit 3)
+				)
+				(path "/9f4449c7-684b-4582-a001-a7b9d3e86a46/d2a30c0c-6afb-403c-9504-25ae0e5b9c6b"
+					(reference "D10")
+					(unit 3)
+				)
+			)
+		)
+	)
+)
