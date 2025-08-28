@@ -12,7 +12,7 @@ on:
         - basic
         - full_generation
   push:
-    branches: [ main ]
+    branches: [ pcb ]
     paths:
       - '.github/workflows/pcb-build.yml'
       - '.github/workflows/release.yml'

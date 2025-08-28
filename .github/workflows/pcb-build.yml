@@ -2,7 +2,7 @@ name: PCB Build and Artifacts
 
 on:
   pull_request:
-    branches: [ main ]
+    branches: [ pcb ]
     paths:
       - 'MotionSimPCB/**'
       - '.github/workflows/pcb-build.yml'      
