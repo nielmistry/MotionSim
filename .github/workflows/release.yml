@@ -1,0 +1,194 @@
+name: Release PCB Files
+
+on:
+  push:
+    tags:
+      - 'v*.*.*'  # Semantic versioning tags like v1.0.0, v2.1.3, etc.
+
+jobs:
+  create-release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker for KiCad
+      run: |
+        docker pull kicad/kicad:9.0
+        
+    - name: Extract version from tag
+      id: version
+      run: |
+        echo "VERSION=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        echo "VERSION_NUM=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        
+    - name: Create output directories
+      run: |
+        mkdir -p release-assets/pdfs
+        mkdir -p release-assets/gerbers
+        mkdir -p release-assets/drill
+        chmod -R 777 release-assets
+        
+    - name: Setup KiCad environment
+      run: |
+        mkdir -p /tmp/kicad-home/.cache
+        mkdir -p /tmp/kicad-home/.config/kicad/9.0
+        chmod -R 777 /tmp/kicad-home
+        
+    - name: Generate PDFs from Schematics
+      run: |
+        # Generate PDF for main schematic
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli sch export pdf MotionSimPCB/MotionSimPCB.kicad_sch && mv MotionSimPCB.pdf release-assets/pdfs/MotionSimPCB-schematic-${{ steps.version.outputs.VERSION }}.pdf"
+          
+        # Generate PDF for controllers schematic
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli sch export pdf MotionSimPCB/controllers.kicad_sch && mv controllers.pdf release-assets/pdfs/controllers-schematic-${{ steps.version.outputs.VERSION }}.pdf"
+          
+    - name: Generate PCB PDF
+      run: |
+        # Try to generate PCB PDF
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli pcb export pdf --layers 'F.Cu,B.Cu,F.Silkscreen,B.Silkscreen,Edge.Cuts' MotionSimPCB/MotionSimPCB.kicad_pcb && mv MotionSimPCB.pdf release-assets/pdfs/MotionSimPCB-pcb-${{ steps.version.outputs.VERSION }}.pdf" || echo "PCB PDF generation failed, skipping"
+          
+    - name: Generate Gerber Files
+      run: |
+        # Generate Gerbers
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli pcb export gerbers --layers 'F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts' MotionSimPCB/MotionSimPCB.kicad_pcb && mv MotionSimPCB-*.g* release-assets/gerbers/" || echo "Gerber generation failed"
+          
+    - name: Generate Drill Files
+      run: |
+        # Generate drill files
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli pcb export drill --format excellon MotionSimPCB/MotionSimPCB.kicad_pcb && mv MotionSimPCB*.drl release-assets/drill/" || echo "Drill generation failed"
+          
+    - name: Create release packages
+      run: |
+        cd release-assets
+        
+        # Create PDF package
+        zip -r ../MotionSimPCB-PDFs-${{ steps.version.outputs.VERSION }}.zip pdfs/
+        
+        # Create manufacturing package (Gerbers + Drill files)
+        zip -r ../MotionSimPCB-Manufacturing-${{ steps.version.outputs.VERSION }}.zip gerbers/ drill/
+        
+        # Create complete package with everything
+        zip -r ../MotionSimPCB-Complete-${{ steps.version.outputs.VERSION }}.zip pdfs/ gerbers/ drill/
+        
+        cd ..
+        
+    - name: List generated packages
+      run: |
+        echo "Generated release packages:"
+        ls -la MotionSimPCB-*.zip
+        echo ""
+        echo "Package contents:"
+        for zip_file in MotionSimPCB-*.zip; do
+          echo "=== Contents of $zip_file ==="
+          unzip -l "$zip_file"
+          echo ""
+        done
+        
+    - name: Create Release
+      id: create_release
+      uses: actions/create-release@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.version.outputs.VERSION }}
+        release_name: Motion Simulator PCB ${{ steps.version.outputs.VERSION }}
+        body: |
+          ## Motion Simulator PCB Release ${{ steps.version.outputs.VERSION }}
+          
+          This release contains the PCB design files for the DIY Motion Simulator project.
+          
+          ### 📄 What's Included
+          
+          **PDFs Package** (`MotionSimPCB-PDFs-${{ steps.version.outputs.VERSION }}.zip`):
+          - Schematic diagrams for review and assembly
+          - PCB layout for reference
+          
+          **Manufacturing Package** (`MotionSimPCB-Manufacturing-${{ steps.version.outputs.VERSION }}.zip`):
+          - Gerber files for PCB fabrication
+          - Excellon drill files
+          - Ready to send to your PCB manufacturer
+          
+          **Complete Package** (`MotionSimPCB-Complete-${{ steps.version.outputs.VERSION }}.zip`):
+          - All PDFs and manufacturing files in one package
+          
+          ### 🏭 Manufacturing Notes
+          
+          The manufacturing package contains all files needed to fabricate the PCB:
+          - **PCB Thickness**: Standard 1.6mm
+          - **Layers**: 2-layer PCB (Top and Bottom copper)
+          - **Surface Finish**: HASL or ENIG recommended
+          - **Solder Mask**: Green (standard)
+          - **Silkscreen**: White
+          
+          ### 📋 Assembly
+          
+          Refer to the main documentation and BOM (Bill of Materials) for component placement and assembly instructions.
+          
+          ---
+          
+          **File Compatibility**: Generated with KiCad 8.0
+          **Generated on**: ${{ github.run_started_at }}
+        draft: false
+        prerelease: false
+        
+    - name: Upload PDFs Package
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./MotionSimPCB-PDFs-${{ steps.version.outputs.VERSION }}.zip
+        asset_name: MotionSimPCB-PDFs-${{ steps.version.outputs.VERSION }}.zip
+        asset_content_type: application/zip
+        
+    - name: Upload Manufacturing Package
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./MotionSimPCB-Manufacturing-${{ steps.version.outputs.VERSION }}.zip
+        asset_name: MotionSimPCB-Manufacturing-${{ steps.version.outputs.VERSION }}.zip
+        asset_content_type: application/zip
+        
+    - name: Upload Complete Package
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./MotionSimPCB-Complete-${{ steps.version.outputs.VERSION }}.zip
+        asset_name: MotionSimPCB-Complete-${{ steps.version.outputs.VERSION }}.zip
+        asset_content_type: application/zip

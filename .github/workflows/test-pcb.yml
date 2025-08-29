@@ -1,0 +1,115 @@
+name: Test PCB Workflow
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_level:
+        description: 'Test level'
+        required: true
+        default: 'basic'
+        type: choice
+        options:
+        - basic
+        - full_generation
+  push:
+    branches: [ pcb ]
+    paths:
+      - '.github/workflows/pcb-build.yml'
+      - '.github/workflows/release.yml'
+      - 'generate-pcb-files.sh'
+
+jobs:
+  test-kicad-setup:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Test Docker KiCad setup
+      run: |
+        docker pull kicad/kicad:9.0
+        echo "✅ KiCad Docker image pulled successfully"
+        
+    - name: Test KiCad CLI availability
+      run: |
+        docker run --rm kicad/kicad:9.0 kicad-cli --help
+        echo "✅ KiCad CLI is working"
+        
+    - name: Verify PCB files exist
+      run: |
+        echo "Checking for PCB files..."
+        ls -la MotionSimPCB/
+        
+        if [ ! -f "MotionSimPCB/MotionSimPCB.kicad_pcb" ]; then
+          echo "❌ PCB file not found"
+          exit 1
+        fi
+        
+        if [ ! -f "MotionSimPCB/MotionSimPCB.kicad_sch" ]; then
+          echo "❌ Main schematic file not found"
+          exit 1
+        fi
+        
+        if [ ! -f "MotionSimPCB/controllers.kicad_sch" ]; then
+          echo "❌ Controllers schematic file not found"  
+          exit 1
+        fi
+        
+        echo "✅ All required PCB files found"
+        
+    - name: Validate workflow YAML files
+      run: |
+        echo "🔍 Validating workflow YAML syntax..."
+        python3 -c "
+        import yaml
+        import sys
+        files = ['.github/workflows/pcb-build.yml', '.github/workflows/release.yml', '.github/workflows/test-pcb.yml']
+        for f in files:
+            try:
+                with open(f) as file:
+                    yaml.safe_load(file)
+                print(f'✅ {f} - Valid YAML')
+            except Exception as e:
+                print(f'❌ {f} - Invalid YAML: {e}')
+                sys.exit(1)
+        print('✅ All workflow files have valid YAML syntax')
+        "
+        
+    - name: Test file permissions and accessibility
+      run: |
+        echo "Testing file read permissions..."
+        docker run --rm -v "$PWD:/workspace" kicad/kicad:9.0 \
+          head -5 /workspace/MotionSimPCB/MotionSimPCB.kicad_pcb
+          
+        echo "✅ PCB files are accessible to Docker container"
+        
+    - name: Test generation script (if full test requested)
+      if: inputs.test_level == 'full_generation'
+      run: |
+        echo "🧪 Testing PCB file generation script..."
+        ./generate-pcb-files.sh
+        
+    - name: Test basic fallback functionality
+      if: inputs.test_level == 'basic'
+      run: |
+        echo "🧪 Testing basic fallback functionality..."
+        mkdir -p test-assets/pdfs
+        
+        # Test existing PDF copy
+        if [ -f "MotionSimPCB/pdfs/MotionSimPCB.pdf" ]; then
+          cp "MotionSimPCB/pdfs/MotionSimPCB.pdf" "test-assets/pdfs/test-schematic.pdf"
+          echo "✅ Existing PDF copy works"
+        else
+          echo "⚠️  No existing PDF found for fallback test"
+        fi
+        
+        # Test zip creation
+        cd test-assets
+        if [ -f "pdfs/test-schematic.pdf" ]; then
+          zip -r ../test-package.zip pdfs/
+          echo "✅ ZIP package creation works"
+        fi
+        cd ..
+        
+        ls -la test-*

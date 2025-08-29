@@ -1,0 +1,11 @@
+# Generated PCB assets (created by CI/CD)
+assets/pdfs/
+assets/gerbers/
+assets/drill/
+release-assets/
+*-manufacturing-files.zip
+MotionSimPCB-*.zip
+
+# Build artifacts
+*.log
+*.tmp

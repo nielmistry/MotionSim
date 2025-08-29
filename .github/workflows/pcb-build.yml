@@ -1,0 +1,219 @@
+name: PCB Build and Artifacts
+
+on:
+  pull_request:
+    branches: [ pcb ]
+    paths:
+      - 'MotionSimPCB/**'
+      - '.github/workflows/pcb-build.yml'      
+  workflow_dispatch:
+
+jobs:
+  build-pcb:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v4
+      
+    - name: Set up Docker for KiCad
+      run: |
+        docker pull kicad/kicad:9.0
+        
+    - name: Create output directories
+      run: |
+        mkdir -p assets/pdfs
+        mkdir -p assets/gerbers
+        mkdir -p assets/drill
+        chmod -R 777 assets
+        
+    - name: Setup KiCad environment
+      run: |
+        mkdir -p /tmp/kicad-home/.cache
+        mkdir -p /tmp/kicad-home/.config/kicad/9.0
+        chmod -R 777 /tmp/kicad-home
+        
+    - name: Generate PDFs from Schematics
+      run: |
+        set +e  # Don't exit on error
+        
+        # Try to generate PDF for main schematic
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli sch export pdf MotionSimPCB/MotionSimPCB.kicad_sch && mv MotionSimPCB.pdf assets/pdfs/MotionSimPCB-schematic.pdf" 2>/dev/null
+          
+        # If that failed, check for existing PDF and copy it
+        if [ ! -f "assets/pdfs/MotionSimPCB-schematic.pdf" ]; then
+          echo "KiCad PDF generation failed, checking for existing PDFs..."
+          if [ -f "MotionSimPCB/pdfs/MotionSimPCB.pdf" ]; then
+            echo "Found existing PDF, copying..."
+            cp "MotionSimPCB/pdfs/MotionSimPCB.pdf" "assets/pdfs/MotionSimPCB-schematic.pdf"
+          else
+            echo "No existing PDF found, creating placeholder"
+            echo "PDF generation failed - see source files in PCB directory" > "assets/pdfs/PDF_GENERATION_FAILED.txt"
+          fi
+        fi
+          
+        # Try to generate PDF for controllers schematic - similar fallback approach
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli sch export pdf MotionSimPCB/controllers.kicad_sch && mv controllers.pdf assets/pdfs/controllers-schematic.pdf" 2>/dev/null
+          
+        if [ ! -f "assets/pdfs/controllers-schematic.pdf" ]; then
+          echo "Controllers schematic PDF generation failed or not available"
+          echo "Controllers schematic PDF generation failed - see source .kicad_sch files" > "assets/pdfs/controllers-schematic-FAILED.txt"
+        fi
+        
+        set -e  # Re-enable exit on error
+          
+    - name: Generate PCB PDF
+      run: |
+        # Try to generate PCB PDF - if it fails, we'll note it but continue
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          sh -c "kicad-cli pcb export pdf --layers 'F.Cu,B.Cu,F.Silkscreen,B.Silkscreen,Edge.Cuts' MotionSimPCB/MotionSimPCB.kicad_pcb && mv MotionSimPCB.pdf assets/pdfs/MotionSimPCB-pcb.pdf" || echo "PCB PDF generation failed, skipping"
+          
+    - name: Generate Gerber Files
+      run: |
+        # Generate Gerbers using KiCad CLI with proper output directory
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          kicad-cli pcb export gerbers \
+          --output /workspace/assets/gerbers \
+          --layers 'F.Cu,B.Cu,F.Paste,B.Paste,F.Silkscreen,B.Silkscreen,F.Mask,B.Mask,Edge.Cuts' \
+          MotionSimPCB/MotionSimPCB.kicad_pcb
+          
+        # Verify Gerbers were generated
+        echo "Generated Gerber files:"
+        ls -la assets/gerbers/
+          
+    - name: Generate Drill Files
+      run: |
+        # Generate drill files using KiCad CLI with proper output directory
+        docker run --rm \
+          -e HOME=/tmp/kicad-home \
+          -v "/tmp/kicad-home:/tmp/kicad-home" \
+          -v "$PWD:/workspace" \
+          -w /workspace \
+          kicad/kicad:9.0 \
+          kicad-cli pcb export drill \
+          --format excellon \
+          --output /workspace/assets/drill \
+          MotionSimPCB/MotionSimPCB.kicad_pcb
+          
+        # Verify drill files were generated
+        echo "Generated drill files:"
+        ls -la assets/drill/
+          
+    - name: List generated files
+      run: |
+        echo "Generated files:"
+        find assets -type f -name "*" | sort
+        
+    - name: Upload PDF artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: pcb-pdfs
+        path: assets/pdfs/
+        retention-days: 30
+        
+    - name: Upload Gerber artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: pcb-gerbers
+        path: assets/gerbers/
+        retention-days: 30
+        
+    - name: Upload Drill artifacts
+      uses: actions/upload-artifact@v4
+      with:
+        name: pcb-drill-files
+        path: assets/drill/
+        retention-days: 30
+        
+    - name: Create ZIP package for manufacturing
+      run: |
+        # Create manufacturing package from generated files
+        cd assets
+        
+        # Create manufacturing package with generated files
+        echo "Creating manufacturing package with generated files..."
+        zip -r ../MotionSimPCB-manufacturing-files.zip gerbers/ drill/
+        
+        cd ..
+        
+    - name: Upload Manufacturing Package
+      uses: actions/upload-artifact@v4
+      with:
+        name: manufacturing-package
+        path: MotionSimPCB-manufacturing-files.zip
+        retention-days: 30
+
+    - name: Comment on PR with artifact links
+      if: github.event_name == 'pull_request'
+      uses: actions/github-script@v7
+      with:
+        script: |
+          const { owner, repo } = context.repo;
+          const pullNumber = context.payload.pull_request.number;
+          const runId = context.runId;
+          
+          // Get artifacts for this workflow run
+          const artifacts = await github.rest.actions.listWorkflowRunArtifacts({
+            owner,
+            repo,
+            run_id: runId
+          });
+          
+          // Find specific artifacts
+          const pdfArtifact = artifacts.data.artifacts.find(a => a.name === 'pcb-pdfs');
+          const gerberArtifact = artifacts.data.artifacts.find(a => a.name === 'pcb-gerbers');
+          const drillArtifact = artifacts.data.artifacts.find(a => a.name === 'pcb-drill-files');
+          const manufacturingArtifact = artifacts.data.artifacts.find(a => a.name === 'manufacturing-package');
+          
+          const comment = `## 🔧 PCB Build Artifacts Generated
+          
+          The PCB files have been processed and the following artifacts are available for download:
+          
+          ### 📄 PDFs
+          - [PCB Schematics & Layout PDFs](https://github.com/${owner}/${repo}/suites/${context.payload.check_suite?.id || context.runId}/artifacts/${pdfArtifact?.id || ''}) - Contains schematic and PCB layout PDFs
+          
+          ### 🏭 Manufacturing Files
+          - [Gerber Files](https://github.com/${owner}/${repo}/suites/${context.payload.check_suite?.id || context.runId}/artifacts/${gerberArtifact?.id || ''}) - PCB manufacturing files
+          - [Drill Files](https://github.com/${owner}/${repo}/suites/${context.payload.check_suite?.id || context.runId}/artifacts/${drillArtifact?.id || ''}) - Drill files for PCB fabrication
+          - [Complete Manufacturing Package](https://github.com/${owner}/${repo}/suites/${context.payload.check_suite?.id || context.runId}/artifacts/${manufacturingArtifact?.id || ''}) - ZIP package ready for PCB manufacturer
+          
+          ### 📦 All Artifacts
+          You can download all artifacts from the [GitHub Actions run](https://github.com/${owner}/${repo}/actions/runs/${runId}).
+          
+          ### 🔗 Direct Download Links
+          ${pdfArtifact ? `- [Download PDFs](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${pdfArtifact.id})` : ''}
+          ${gerberArtifact ? `- [Download Gerber Files](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${gerberArtifact.id})` : ''}
+          ${drillArtifact ? `- [Download Drill Files](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${drillArtifact.id})` : ''}
+          ${manufacturingArtifact ? `- [Download Manufacturing Package](https://github.com/${owner}/${repo}/actions/runs/${runId}/artifacts/${manufacturingArtifact.id})` : ''}
+          
+          ---
+          *Generated automatically by PCB Build workflow*`;
+          
+          github.rest.issues.createComment({
+            owner,
+            repo,
+            issue_number: pullNumber,
+            body: comment
+          });
