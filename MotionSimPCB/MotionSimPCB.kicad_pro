@@ -60,6 +60,14 @@
       ],
       "drc_exclusions": [
         [
+          "courtyards_overlap|121655000|101205000|221c2305-f518-4093-9d9e-c9f0b78e18ad|4fbc2033-5641-4568-ac60-4ec8b18e75ab",
+          ""
+        ],
+        [
+          "courtyards_overlap|132905000|101205000|221c2305-f518-4093-9d9e-c9f0b78e18ad|913ff04a-fef8-41f1-8cb4-3e9020296593",
+          ""
+        ],
+        [
           "silk_overlap|109190000|91510000|0cd6e99c-c881-42dc-854a-157dab98b348|f68d3fcf-523c-420c-bcb3-59a863b6d532",
           ""
         ],
@@ -515,7 +523,7 @@
       "plot": "",
       "pos_files": "",
       "specctra_dsn": "",
-      "step": "",
+      "step": "MotionSimPCB.step",
       "svg": "",
       "vrml": ""
     },
