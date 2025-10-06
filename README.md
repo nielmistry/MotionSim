@@ -34,6 +34,15 @@ The wiring for the simulator includes:
 - Side compartment wiring for controller integration.
 - Back panel connectors for ease of disassembly.
 
+### Custom PCB Design
+This repository includes a custom PCB design located in the `MotionSimPCB` directory that differs from the original project layout and provides several enhancements:
+
+- **Power off button**: Integrated power control for safe system shutdown
+- **Logic level translator**: Built-in voltage level conversion eliminating the need for external modules
+- **Integrated MPU-6050 footprint**: Direct PCB mounting option for the motion sensor while maintaining compatibility with external MPU-6050 modules
+
+The custom PCB maintains backward compatibility with the original wiring approach while offering a more integrated and robust solution.
+
 Ensure proper orientation and connections for the MPU6050 sensor and other components.
 
 ## Software Setup
